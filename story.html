@@ -1,0 +1,24 @@
+<h1>{{.Title}}</h1>
+
+<div>{{range .Story}}
+    {{.}}
+    {{end}}
+</div>
+
+ {{range .Options}}
+     <h4>{{.Arc}}</h4>
+     <div>
+         <p>
+            <a href="/{{.Arc}}">{{.Text}}</a>
+         </p>
+    </div>
+ 
+{{end}}
+
+<br/><br/><br/><br/><br/>
+ 
+<div>
+    <p>
+       <a href="/intro">Restart the adventure</a>
+    </p>
+</div>

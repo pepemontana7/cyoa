@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"html/template"
 )
 
 var GopherStory map[string]Arc
@@ -33,8 +35,17 @@ type StoryHandler struct {
 }
 
 func (sh StoryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "hello, you've hit %s\n", r.URL.Path)
-	fmt.Fprintf(w, "Story intro: %s\n", sh.Story["intro"])
+	t, err := template.ParseFiles("story.html")
+	check(err)
+	var k string
+	if len(r.URL.Path) == 1 {
+		k = "intro"
+	} else {
+		k = r.URL.Path[1:]
+	}
+	t.Execute(w, sh.Story[k])
+	//fmt.Fprintf(w, "hello, you've hit %s\n", r.URL.Path)
+	//fmt.Fprintf(w, "Story intro: %s\n", sh.Story["intro"])
 }
 func main() {
 
@@ -59,8 +70,14 @@ func main() {
 			fmt.Printf(" Field Name: %s ", typeField.Name)
 		}
 	}*/
+
 	h := http.NewServeMux()
 	h.Handle("/", StoryHandler{GopherStory})
+	for k := range GopherStory {
+		fmt.Printf("adding handle for %s \n", k)
+		h.Handle("/"+k, StoryHandler{GopherStory})
+	}
+
 	err = http.ListenAndServe(":9999", h)
 	check(err)
 
